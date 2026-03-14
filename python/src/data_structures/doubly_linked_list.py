@@ -98,6 +98,56 @@ class SinglyLinkedList(MutableSequence):
 
         self._size += 1
 
+    def push_front(self, value):
+        prev_head = self._head
+        self._head = DoublyLinkedNode(value=value, next=prev_head, prev=None)
+        if prev_head is None:
+            self._tail = self._head
+        else:
+            prev_head.prev = self._head
+
+        self._size += 1
+
+    def pop_front(self):
+        if self._head is None:
+            raise IndexError("List is empty")
+
+        value = self._head.value
+        self._head = self._head.next
+        if self._head is None:
+            self._tail = None
+        else:
+            self._head.prev = None
+
+        self._size -= 1
+        return value
+
+    def push_back(self, value):
+        prev_tail = self._tail
+        self._tail = DoublyLinkedNode(value=value, next=None, prev=prev_tail)
+        if prev_tail is None:
+            self._head = self._tail
+        else:
+            prev_tail.next = self._tail
+
+        self._size += 1
+
+    def pop_back(self):
+        if self._tail is None:
+            raise IndexError("List is empty")
+
+        value = self._tail.value
+        self._tail = self._tail.prev
+        if self._tail is None:
+            self._head = None
+        else:
+            self._tail.next = None
+
+        self._size -= 1
+        return value
+
+    ############### private methods ####################
+
     def _discard_slice_index(self, index):
         if isinstance(index, slice):
             raise NotImplementedError("Slicing is not supported")
@@ -116,3 +166,9 @@ class SinglyLinkedList(MutableSequence):
         while node is not None:
             yield node
             node = node.next
+
+    def _iter_nodes_reversed(self):
+        node = self._tail
+        while node is not None:
+            yield node
+            node = node.prev

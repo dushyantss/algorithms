@@ -435,3 +435,213 @@ class TestReverseInPlace:
         dll = DoublyLinkedList()
         dll.reverse()  # should not raise
         assert list(dll) == []
+
+
+# ---------------------------------------------------------------------------
+# push_front
+# ---------------------------------------------------------------------------
+
+class TestPushFront:
+    def test_push_front_adds_to_beginning(self):
+        dll = make_list(2, 3)
+        dll.push_front(1)
+        assert list(dll) == [1, 2, 3]
+
+    def test_push_front_increases_length(self):
+        dll = make_list(1, 2)
+        dll.push_front(0)
+        assert len(dll) == 3
+
+    def test_push_front_onto_empty(self):
+        dll = DoublyLinkedList()
+        dll.push_front(1)
+        assert list(dll) == [1]
+
+    def test_push_front_onto_empty_updates_tail(self):
+        # When pushing onto an empty list, tail must also point to the new node
+        dll = DoublyLinkedList()
+        dll.push_front(1)
+        assert list(reversed(dll)) == [1]
+
+    def test_push_front_updates_prev_links(self):
+        dll = make_list(2, 3)
+        dll.push_front(1)
+        assert list(reversed(dll)) == [3, 2, 1]
+
+    def test_push_front_multiple(self):
+        dll = DoublyLinkedList()
+        dll.push_front(3)
+        dll.push_front(2)
+        dll.push_front(1)
+        assert list(dll) == [1, 2, 3]
+
+
+# ---------------------------------------------------------------------------
+# push_back
+# ---------------------------------------------------------------------------
+
+class TestPushBack:
+    def test_push_back_adds_to_end(self):
+        dll = make_list(1, 2)
+        dll.push_back(3)
+        assert list(dll) == [1, 2, 3]
+
+    def test_push_back_increases_length(self):
+        dll = make_list(1, 2)
+        dll.push_back(3)
+        assert len(dll) == 3
+
+    def test_push_back_onto_empty(self):
+        dll = DoublyLinkedList()
+        dll.push_back(1)
+        assert list(dll) == [1]
+
+    def test_push_back_onto_empty_updates_head(self):
+        # When pushing onto an empty list, head must also point to the new node
+        dll = DoublyLinkedList()
+        dll.push_back(1)
+        assert list(dll) == [1]
+
+    def test_push_back_updates_prev_links(self):
+        dll = make_list(1, 2)
+        dll.push_back(3)
+        assert list(reversed(dll)) == [3, 2, 1]
+
+    def test_push_back_multiple(self):
+        dll = DoublyLinkedList()
+        dll.push_back(1)
+        dll.push_back(2)
+        dll.push_back(3)
+        assert list(dll) == [1, 2, 3]
+
+
+# ---------------------------------------------------------------------------
+# pop_front
+# ---------------------------------------------------------------------------
+
+class TestPopFront:
+    def test_pop_front_returns_first_element(self):
+        dll = make_list(1, 2, 3)
+        assert dll.pop_front() == 1
+
+    def test_pop_front_removes_first_element(self):
+        dll = make_list(1, 2, 3)
+        dll.pop_front()
+        assert list(dll) == [2, 3]
+
+    def test_pop_front_decreases_length(self):
+        dll = make_list(1, 2, 3)
+        dll.pop_front()
+        assert len(dll) == 2
+
+    def test_pop_front_updates_prev_links(self):
+        dll = make_list(1, 2, 3)
+        dll.pop_front()
+        assert list(reversed(dll)) == [3, 2]
+
+    def test_pop_front_single_element_empties_list(self):
+        dll = make_list(1)
+        dll.pop_front()
+        assert list(dll) == []
+        assert len(dll) == 0
+
+    def test_pop_front_single_element_clears_tail(self):
+        # After popping the last element, reversed() must also be empty
+        dll = make_list(1)
+        dll.pop_front()
+        assert list(reversed(dll)) == []
+
+    def test_pop_front_empty_raises(self):
+        dll = DoublyLinkedList()
+        with pytest.raises(IndexError):
+            dll.pop_front()
+
+    def test_pop_front_all_elements(self):
+        dll = make_list(1, 2, 3)
+        assert dll.pop_front() == 1
+        assert dll.pop_front() == 2
+        assert dll.pop_front() == 3
+        assert len(dll) == 0
+
+
+# ---------------------------------------------------------------------------
+# pop_back
+# ---------------------------------------------------------------------------
+
+class TestPopBack:
+    def test_pop_back_returns_last_element(self):
+        dll = make_list(1, 2, 3)
+        assert dll.pop_back() == 3
+
+    def test_pop_back_removes_last_element(self):
+        dll = make_list(1, 2, 3)
+        dll.pop_back()
+        assert list(dll) == [1, 2]
+
+    def test_pop_back_decreases_length(self):
+        dll = make_list(1, 2, 3)
+        dll.pop_back()
+        assert len(dll) == 2
+
+    def test_pop_back_updates_prev_links(self):
+        dll = make_list(1, 2, 3)
+        dll.pop_back()
+        assert list(reversed(dll)) == [2, 1]
+
+    def test_pop_back_single_element_empties_list(self):
+        dll = make_list(1)
+        dll.pop_back()
+        assert list(dll) == []
+        assert len(dll) == 0
+
+    def test_pop_back_single_element_clears_head(self):
+        # After popping the last element, forward iteration must also be empty
+        dll = make_list(1)
+        dll.pop_back()
+        assert list(dll) == []
+
+    def test_pop_back_empty_raises(self):
+        dll = DoublyLinkedList()
+        with pytest.raises(IndexError):
+            dll.pop_back()
+
+    def test_pop_back_all_elements(self):
+        dll = make_list(1, 2, 3)
+        assert dll.pop_back() == 3
+        assert dll.pop_back() == 2
+        assert dll.pop_back() == 1
+        assert len(dll) == 0
+
+
+# ---------------------------------------------------------------------------
+# push/pop interleaved
+# ---------------------------------------------------------------------------
+
+class TestPushPopInterleaved:
+    def test_push_front_then_pop_back(self):
+        dll = DoublyLinkedList()
+        dll.push_front(1)
+        dll.push_front(2)
+        dll.push_front(3)
+        assert dll.pop_back() == 1
+        assert dll.pop_back() == 2
+        assert dll.pop_back() == 3
+
+    def test_push_back_then_pop_front(self):
+        dll = DoublyLinkedList()
+        dll.push_back(1)
+        dll.push_back(2)
+        dll.push_back(3)
+        assert dll.pop_front() == 1
+        assert dll.pop_front() == 2
+        assert dll.pop_front() == 3
+
+    def test_mixed_push_and_pop(self):
+        dll = DoublyLinkedList()
+        dll.push_back(1)
+        dll.push_front(0)
+        dll.push_back(2)
+        assert list(dll) == [0, 1, 2]
+        assert dll.pop_front() == 0
+        assert dll.pop_back() == 2
+        assert list(dll) == [1]
