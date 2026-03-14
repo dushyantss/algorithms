@@ -10,7 +10,7 @@ class DoublyLinkedNode:
     prev: Optional["DoublyLinkedNode"]
 
 
-class SinglyLinkedList(MutableSequence):
+class DoublyLinkedList(MutableSequence):
     def __init__(self):
         self._head: DoublyLinkedNode | None = None
         self._tail: DoublyLinkedNode | None = None

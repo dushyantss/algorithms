@@ -1,5 +1,5 @@
 import pytest
-from data_structures.doubly_linked_list import SinglyLinkedList as DoublyLinkedList
+from data_structures.doubly_linked_list import DoublyLinkedList
 
 
 # ---------------------------------------------------------------------------
