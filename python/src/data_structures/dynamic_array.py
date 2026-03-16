@@ -1,3 +1,15 @@
+"""A resizable array with contiguous storage.
+
+Dynamic arrays are the default general-purpose sequence in most languages.
+They provide O(1) indexed access and amortized O(1) append, but inserts or
+deletes away from the end still require shifting elements.
+
+Useful for:
+- building stacks and array-backed queues/deques
+- problems that need random access by index
+- understanding amortized analysis and growth strategies
+"""
+
 from collections.abc import MutableSequence
 
 GROWTH_FACTOR = 2
@@ -5,6 +17,17 @@ INITIAL_CAPACITY = 8
 
 
 class DynamicArray(MutableSequence):
+    """List-like sequence backed by a manually managed Python list.
+
+    The key idea is capacity vs. size:
+    - size: number of logical elements currently stored
+    - capacity: number of elements we can store before growing
+
+    When the array fills up, it allocates a larger backing array and copies
+    elements over. That expensive resize happens rarely enough that append
+    remains amortized O(1).
+    """
+
     def __init__(self):
         self._array = [None] * INITIAL_CAPACITY
         self._size: int = 0
@@ -49,6 +72,8 @@ class DynamicArray(MutableSequence):
         return value
 
     def insert(self, index: int, value):
+        # Match Python's list.insert semantics by clamping the requested index
+        # into the valid insertion range [0, size].
         if index < 0:
             index += self._size
 
@@ -58,11 +83,14 @@ class DynamicArray(MutableSequence):
             index = self._size
 
         if self._size < self._capacity:
+            # Fast path: shift in-place when spare capacity exists.
             for i in range(self._size - 1, index - 1, -1):
                 self._array[i + 1] = self._array[i]
             self._array[index] = value
             self._size += 1
         else:
+            # Slow path: grow the backing array, then copy elements around the
+            # inserted value.
             new_capacity = self._capacity * GROWTH_FACTOR
             new_array = [None] * new_capacity
             for i in range(index):

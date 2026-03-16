@@ -1,3 +1,14 @@
+"""A linked list where each node points to both the next and previous node.
+
+Doubly linked lists trade extra memory per node for easier insertion and
+deletion at both ends. They are the usual foundation for deques and LRU caches.
+
+Useful for:
+- deque-style operations at both ends
+- problems that require frequent removals with node references
+- understanding bidirectional pointer maintenance
+"""
+
 from collections.abc import MutableSequence
 from dataclasses import dataclass
 from typing import Any, Optional
@@ -11,6 +22,12 @@ class DoublyLinkedNode:
 
 
 class DoublyLinkedList(MutableSequence):
+    """Sequence interface over a doubly linked list with head and tail pointers.
+
+    Keeping both ends lets us support O(1) push/pop at the front and back.
+    Indexed access is still O(n), because nodes are not stored contiguously.
+    """
+
     def __init__(self):
         self._head: DoublyLinkedNode | None = None
         self._tail: DoublyLinkedNode | None = None
@@ -66,6 +83,7 @@ class DoublyLinkedList(MutableSequence):
                 return
 
     def insert(self, index: int, value):
+        # Clamp the insertion index so the behavior mirrors list.insert.
         if index < 0:
             index += self._size
 
@@ -81,15 +99,19 @@ class DoublyLinkedList(MutableSequence):
                 break
 
         if current_node is None:
+            # Empty list case: head and tail should point to the same node.
             self._head = DoublyLinkedNode(value=value, next=None, prev=None)
             self._tail = self._head
         elif index == 0:
+            # Insert before the existing head.
             self._head = DoublyLinkedNode(value=value, next=current_node, prev=None)
             current_node.prev = self._head
         elif index == self._size:
+            # Insert after the existing tail.
             self._tail = DoublyLinkedNode(value=value, next=None, prev=current_node)
             current_node.next = self._tail
         else:
+            # General middle insertion rewires both neighboring nodes.
             node = DoublyLinkedNode(
                 value=value, next=current_node, prev=current_node.prev
             )
@@ -99,6 +121,7 @@ class DoublyLinkedList(MutableSequence):
         self._size += 1
 
     def push_front(self, value):
+        """Insert at the head in O(1)."""
         prev_head = self._head
         self._head = DoublyLinkedNode(value=value, next=prev_head, prev=None)
         if prev_head is None:
@@ -109,6 +132,7 @@ class DoublyLinkedList(MutableSequence):
         self._size += 1
 
     def pop_front(self):
+        """Remove and return the head value in O(1)."""
         if self._head is None:
             raise IndexError("List is empty")
 
@@ -123,6 +147,7 @@ class DoublyLinkedList(MutableSequence):
         return value
 
     def push_back(self, value):
+        """Insert at the tail in O(1)."""
         prev_tail = self._tail
         self._tail = DoublyLinkedNode(value=value, next=None, prev=prev_tail)
         if prev_tail is None:
@@ -133,6 +158,7 @@ class DoublyLinkedList(MutableSequence):
         self._size += 1
 
     def pop_back(self):
+        """Remove and return the tail value in O(1)."""
         if self._tail is None:
             raise IndexError("List is empty")
 

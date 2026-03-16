@@ -1,3 +1,15 @@
+"""A linked list where each node stores a value and a pointer to the next node.
+
+Singly linked lists are useful for learning pointer manipulation and for cases
+where inserts/deletes near the front are common. They do not support fast
+random access; indexing requires walking node by node from the head.
+
+Useful for:
+- understanding node-based storage vs. contiguous arrays
+- implementing stacks or simple adjacency lists
+- interview problems focused on pointer rewiring
+"""
+
 from collections.abc import MutableSequence
 from dataclasses import dataclass
 from typing import Any, Optional
@@ -10,6 +22,14 @@ class SinglyLinkedNode:
 
 
 class SinglyLinkedList(MutableSequence):
+    """Sequence interface over a forward-only linked list.
+
+    This implementation keeps only a head pointer, so operations that need the
+    previous node or the tail require traversal. As a result:
+    - front insert/delete can be O(1)
+    - indexed access, search, and tail-oriented work are O(n)
+    """
+
     def __init__(self):
         self._head: SinglyLinkedNode | None = None
         self._size: int = 0
@@ -56,6 +76,7 @@ class SinglyLinkedList(MutableSequence):
                 prev = node
 
     def insert(self, index: int, value):
+        # Clamp the insertion index so the method behaves like list.insert.
         if index < 0:
             index += self._size
 
@@ -75,15 +96,10 @@ class SinglyLinkedList(MutableSequence):
                 prev = node
 
         if prev is None:
-            # Happens in 2 case:
-            # - if index == self._size == 0(in which case next is None)
-            # - if index == 0 != self._size(in which case we can use the value in next)
-            # In either case, we need a new head.
+            # Inserting at the front creates a new head node.
             self._head = SinglyLinkedNode(value=value, next=next)
         else:
-            # Happens in 2 cases:
-            # - if index == self._size != 0(in which case next is the last node and prev is the one before that)
-            # - if index  != self._size(usual case)
+            # Otherwise we splice the new node between prev and next.
             prev.next = SinglyLinkedNode(value=value, next=next)
 
         self._size += 1

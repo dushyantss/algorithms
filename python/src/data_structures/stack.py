@@ -1,4 +1,17 @@
+"""A LIFO stack.
+
+Stacks are used whenever the most recently added item should be processed first.
+They show up in expression evaluation, parsing, DFS, backtracking, and undo
+history.
+"""
+
 class Stack:
+    """Thin stack wrapper over a dynamic Python list.
+
+    The end of the internal list is treated as the top of the stack so both
+    push and pop stay O(1) amortized.
+    """
+
     def __init__(self):
         self._array = []
         self._size: int = 0
